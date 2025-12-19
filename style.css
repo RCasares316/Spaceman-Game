@@ -1,6 +1,7 @@
 body {
   display: flex;
   align-items: center;
+  padding: 0 10px;
   justify-content: center;
   min-height: 100vh;
   background-color: #420d4b;
@@ -26,18 +27,133 @@ h1 {
 img {
   width: 300px;
 }
-.spaceship{
-    max-width: 270px;
+.spaceship {
+  max-width: 270px;
 }
-.worddisplay{
-    display: flex;
-    gap: 10px;
-    list-style: none;
+.worddisplay {
+  display: flex;
+  gap: 10px;
+  list-style: none;
+  align-items: center;
+  justify-content: center;
+}
+.worddisplay .letter {
+  width: 28px;
+  font-size: 2rem;
+  font-weight: 600;
+  text-align: center;
+  text-transform: uppercase;
+  border-bottom: 3px solid #000;
+  margin-bottom: 10px;
+}
+.worddisplay .letter.guessed {
+  border-color: transparent;
+  margin: -40px 0 5px;
+}
+.gamebox h4 {
+  text-align: center;
+  font-size: 1.1rem;
+  font-weight: 500;
+  margin-bottom: 15px;
+}
+.gamebox h4 b {
+  font-weight: 550;
+}
+.gamebox .guessestext b {
+  color: red;
+}
+.gamebox .keyboard {
+  display: flex;
+  gap: 5px;
+  margin-top: 25px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+:where(.gamemodal .keyboard) button {
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  outline: none;
+  border: none;
+  color: white;
+  background-color: #91428b;
+  text-transform: uppercase;
+  border-radius: 4px;
+}
+.keyboard button {
+  text-transform: uppercase;
+  background-color: #91428b;
+  padding: 7px;
+  width: calc(100% / 9 - 5px);
+}
+.keyboard button[disabled]{
+    opacity: 0.6;
+    pointer-events: none;
+}
+:where(.gamemodal .keyboard) .keyboard button:hover {
+  background: #bc67b5;
+}
+.keyboard button:hover {
+  background: #bc67b5;
+}
+.gamemodal {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  pointer-events: none;
+  z-index: 999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.6);
+  transition: opacity 0.4s ease;
+}
+.gamemodal.show{
+    opacity: 1;
+    pointer-events: auto;
+}
+.gamemodal .content {
+  background: #fff;
+  max-width: 320px;
+  width: 100%;
+  text-align: center;
+  border-radius: 10px;
+  padding: 30px;
+}
+.gamemodal img {
+  width: 130px;
+}
+.gamemodal h4 {
+  font-size: 25px;
+}
+.gamemodal p {
+  font-size: 20px;
+  margin: 15px 0 30px;
+  font-weight: 500;
+}
+.gamemodal p b {
+  color: #6cc417;
+  font-weight: 600;
+}
+.gamemodal button {
+  padding: 8px 10px;
+}
+
+@media (max-width: 782px) {
+  .container {
+    flex-direction: column;
+    padding: 30px 15px;
     align-items: center;
+  }
+  .spaceship img {
+    max-width: 150px;
+  }
+  h1 {
+    display: flex;
     justify-content: center;
-}
-.worddisplay .letter{
-    width: 28px;
-    border-bottom: 3px solid #000;
-    margin-bottom: 40px;
+    flex-direction: column;
+  }
 }
