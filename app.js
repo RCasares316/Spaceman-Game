@@ -2,8 +2,14 @@ const keyboard = document.querySelector(".keyboard");
 const wordDisplay = document.querySelector(".worddisplay");
 const guessesText = document.querySelector(".guessestext");
 const gameModal = document.querySelector(".gamemodal");
-const maxGuesses = 6;
 const playAgainButton = document.querySelector(".playagain");
+const canvas = document.querySelector("#spaceman");
+const ctx = canvas.getContext("2d");
+const maxGuesses = 6;
+const winGifSrc =
+  "https://media4.giphy.com/media/v1.Y2lkPTc5MGI3NjExeWg4cGFmdG0xMXk5NTA1aGJhM2o4cnk5a21uamlobjg3cHpvOHIybyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/EzGQJwS4x8cHxjJhEH/giphy.gif";
+const loseGifSrc =
+  "https://media4.giphy.com/media/v1.Y2lkPTc5MGI3NjExamM5OXF0a2pwdm92bXFuM2JwM2ZkYjBpMnNqYmxoaWtpbTR2enQ2YyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/0DRUriUecweUs5QFQF/giphy.gif";
 let currentWord;
 let wrongGuessCount = 0;
 let correctLetters = [];
@@ -25,7 +31,31 @@ const wordList = [
   { word: "void", hint: "Empty space" },
   { word: "ring", hint: "Circles around some planets" },
 ];
+
+// Order you want parts to appear:
+const parts = [
+  drawLeftArm,
+  drawRightArm,
+  drawTorso,
+  drawLeftLeg,
+  drawRightLeg,
+  drawHead,
+];
+
+function renderSpaceman() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  // Optional: draw a "ground" line so it feels anchored
+  drawGround();
+
+  // Draw the parts revealed so far
+  for (let i = 0; i < wrongGuessCount; i++) {
+    parts[i]();
+  }
+}
+
 const getRandomWord = () => {
+  gameModal.classList.remove("show");
   const { word, hint } = wordList[Math.floor(Math.random() * wordList.length)];
   currentWord = word;
   console.log(word);
@@ -37,9 +67,15 @@ const getRandomWord = () => {
 };
 
 const gameOver = (isVictory) => {
-  setTimeout(() => {
-    gameModal.classList.add("show");
-  }, 300);
+  if (isVictory) {
+    gameModal.querySelector("img").src = winGifSrc;
+    gameModal.querySelector("b").textContent = currentWord;
+  } else {
+    gameModal.querySelector("img").src = loseGifSrc;
+    gameModal.querySelector("b").textContent = currentWord;
+  }
+
+  gameModal.classList.add("show");
 };
 
 const initGame = (button, clickedLetter) => {
@@ -53,6 +89,7 @@ const initGame = (button, clickedLetter) => {
     });
   } else {
     wrongGuessCount++;
+    renderSpaceman();
   }
   button.disabled = true;
   guessesText.innerText = `${wrongGuessCount} / ${maxGuesses}`;
@@ -69,4 +106,253 @@ for (let i = 97; i <= 122; i++) {
   );
 }
 getRandomWord();
-playAgainButton.addEventListener("click", getRandomWord);
+
+playAgainButton.addEventListener("click", () => {
+  // Reset game settings
+  wrongGuessCount = 0;
+  correctLetters = [];
+  guessesText.innerText = `${wrongGuessCount} / ${maxGuesses}`;
+
+  for (let child of keyboard.children) {
+    child.disabled = false;
+  }
+
+  ctx.clearRect(0, 0, canvas.width, canvas.height); // clear spaceman from canvas
+
+  getRandomWord();
+});
+
+/* =========================================================
+   Drawing Helpers + Body Parts
+   ========================================================= */
+
+function drawGround() {
+  ctx.beginPath();
+  ctx.moveTo(40, 360);
+  ctx.lineTo(260, 360);
+  ctx.lineWidth = 3;
+  ctx.strokeStyle = "#111";
+  ctx.stroke();
+}
+
+// Common style: astronaut outline
+function setOutline() {
+  ctx.lineWidth = 3;
+  ctx.strokeStyle = "#111";
+}
+
+// Common fill for suit
+function setSuitFill() {
+  ctx.fillStyle = "#e8e8e8";
+}
+
+// Common accent color
+function setAccentFill() {
+  ctx.fillStyle = "#3bd16f"; // green-ish accent
+}
+
+// --------------------------------
+// HEAD
+// --------------------------------
+function drawHead() {
+  setOutline();
+  setSuitFill();
+
+  // Helmet outer
+  ctx.beginPath();
+  ctx.arc(150, 90, 55, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.stroke();
+
+  // Visor
+  ctx.beginPath();
+  ctx.ellipse(150, 95, 35, 25, 0, 0, Math.PI * 2);
+  ctx.fillStyle = "#111";
+  ctx.fill();
+
+  // Tiny highlight on visor
+  ctx.beginPath();
+  ctx.ellipse(138, 85, 10, 6, -0.4, 0, Math.PI * 2);
+  ctx.fillStyle = "rgba(255,255,255,0.25)";
+  ctx.fill();
+
+  // Neck ring
+  setOutline();
+  ctx.beginPath();
+  ctx.rect(120, 135, 60, 18);
+  ctx.fillStyle = "#d8d8d8";
+  ctx.fill();
+  ctx.stroke();
+}
+
+// --------------------------------
+// TORSO
+// --------------------------------
+function drawTorso() {
+  setOutline();
+  setSuitFill();
+
+  // Body
+  ctx.beginPath();
+  ctx.roundRect(110, 155, 80, 110, 18);
+  ctx.fill();
+  ctx.stroke();
+
+  // Chest panel
+  ctx.beginPath();
+  ctx.roundRect(130, 185, 40, 35, 8);
+  ctx.fillStyle = "#ffffff";
+  ctx.fill();
+  ctx.stroke();
+
+  // Buttons on panel
+  ctx.fillStyle = "#ff4d4d";
+  ctx.fillRect(136, 193, 8, 8);
+
+  ctx.fillStyle = "#4da6ff";
+  ctx.fillRect(148, 193, 8, 8);
+
+  ctx.fillStyle = "#ffd24d";
+  ctx.fillRect(160, 193, 8, 8);
+
+  // Accent belt
+  setAccentFill();
+  ctx.beginPath();
+  ctx.roundRect(110, 250, 80, 18, 8);
+  ctx.fill();
+
+  setOutline();
+  ctx.stroke();
+}
+
+// --------------------------------
+// LEFT ARM
+// --------------------------------
+function drawLeftArm() {
+  setOutline();
+  setSuitFill();
+
+  // Upper arm
+  ctx.beginPath();
+  ctx.roundRect(75, 170, 35, 65, 18);
+  ctx.fill();
+  ctx.stroke();
+
+  // Forearm (slightly angled feel by offset)
+  ctx.beginPath();
+  ctx.roundRect(65, 225, 40, 65, 18);
+  ctx.fill();
+  ctx.stroke();
+
+  // Glove
+  ctx.beginPath();
+  ctx.roundRect(62, 282, 45, 28, 12);
+  ctx.fillStyle = "#d0d0d0";
+  ctx.fill();
+  ctx.stroke();
+
+  // Accent ring
+  setAccentFill();
+  ctx.beginPath();
+  ctx.roundRect(78, 210, 25, 10, 5);
+  ctx.fill();
+}
+
+// --------------------------------
+// RIGHT ARM
+// --------------------------------
+function drawRightArm() {
+  setOutline();
+  setSuitFill();
+
+  // Upper arm
+  ctx.beginPath();
+  ctx.roundRect(190, 170, 35, 65, 18);
+  ctx.fill();
+  ctx.stroke();
+
+  // Forearm
+  ctx.beginPath();
+  ctx.roundRect(195, 225, 40, 65, 18);
+  ctx.fill();
+  ctx.stroke();
+
+  // Glove
+  ctx.beginPath();
+  ctx.roundRect(195, 282, 45, 28, 12);
+  ctx.fillStyle = "#d0d0d0";
+  ctx.fill();
+  ctx.stroke();
+
+  // Accent ring
+  setAccentFill();
+  ctx.beginPath();
+  ctx.roundRect(198, 210, 25, 10, 5);
+  ctx.fill();
+}
+
+// --------------------------------
+// LEFT LEG
+// --------------------------------
+function drawLeftLeg() {
+  setOutline();
+  setSuitFill();
+
+  // Thigh
+  ctx.beginPath();
+  ctx.roundRect(120, 265, 30, 65, 16);
+  ctx.fill();
+  ctx.stroke();
+
+  // Shin
+  ctx.beginPath();
+  ctx.roundRect(115, 325, 35, 55, 16);
+  ctx.fill();
+  ctx.stroke();
+
+  // Boot
+  ctx.beginPath();
+  ctx.roundRect(105, 370, 55, 22, 12);
+  ctx.fillStyle = "#d0d0d0";
+  ctx.fill();
+  ctx.stroke();
+
+  // Knee pad accent
+  setAccentFill();
+  ctx.beginPath();
+  ctx.roundRect(122, 295, 26, 12, 6);
+  ctx.fill();
+}
+
+// --------------------------------
+// RIGHT LEG
+// --------------------------------
+function drawRightLeg() {
+  setOutline();
+  setSuitFill();
+
+  // Thigh
+  ctx.beginPath();
+  ctx.roundRect(150, 265, 30, 65, 16);
+  ctx.fill();
+  ctx.stroke();
+
+  // Shin
+  ctx.beginPath();
+  ctx.roundRect(150, 325, 35, 55, 16);
+  ctx.fill();
+  ctx.stroke();
+
+  // Boot
+  ctx.beginPath();
+  ctx.roundRect(145, 370, 55, 22, 12);
+  ctx.fillStyle = "#d0d0d0";
+  ctx.fill();
+  ctx.stroke();
+
+  // Knee pad accent
+  setAccentFill();
+  ctx.beginPath();
+  ctx.roundRect(152, 295, 26, 12, 6);
+  ctx.fill();
+}

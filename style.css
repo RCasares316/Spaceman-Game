@@ -28,7 +28,14 @@ img {
   width: 300px;
 }
 .spaceship {
+  position: relative;
   max-width: 270px;
+}
+#spaceman {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 2; /* higher = on top */
 }
 .worddisplay {
   display: flex;
@@ -86,9 +93,9 @@ img {
   padding: 7px;
   width: calc(100% / 9 - 5px);
 }
-.keyboard button[disabled]{
-    opacity: 0.6;
-    pointer-events: none;
+.keyboard button[disabled] {
+  opacity: 0.6;
+  pointer-events: none;
 }
 :where(.gamemodal .keyboard) .keyboard button:hover {
   background: #bc67b5;
@@ -111,9 +118,9 @@ img {
   background: rgba(0, 0, 0, 0.6);
   transition: opacity 0.4s ease;
 }
-.gamemodal.show{
-    opacity: 1;
-    pointer-events: auto;
+.gamemodal.show {
+  opacity: 1;
+  pointer-events: auto;
 }
 .gamemodal .content {
   background: #fff;
